@@ -107,7 +107,7 @@ main(int argc, const char **argv) {
     srand(time(0));
     random_shuffle(idx.begin(), idx.end());
     idx.erase(idx.begin() + sample_size, idx.end());
-    sort(idx.begin(), idx.end());
+    sort(idx.begin(), idx.end(), std::greater<int>());
 
     std::ofstream of;
     if (!outfile.empty()) of.open(outfile.c_str());
@@ -121,9 +121,9 @@ main(int argc, const char **argv) {
     size_t index = 0;
 
     while (getline(in, line)) {
-      if (index == idx.front()) {
+      if (index == idx.back()) {
         out << line << endl;
-        idx.erase(idx.begin());
+        idx.pop_back();
       }
       ++index;
     }
