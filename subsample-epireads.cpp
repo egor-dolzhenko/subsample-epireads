@@ -65,6 +65,7 @@ main(int argc, const char **argv) {
     
     bool VERBOSE = false;
     string outfile;
+    string leftover_file;
     size_t sample_size = 0;
     
     /****************** COMMAND LINE OPTIONS ********************/
@@ -73,6 +74,8 @@ main(int argc, const char **argv) {
     opt_parse.add_opt("output", 'o', "output file name (default: stdout)", 
 		      false, outfile);
     opt_parse.add_opt("verbose", 'v', "print more run info", false, VERBOSE);
+    opt_parse.add_opt("leftover", 'l', "file name for leftover", false, 
+                      leftover_file);
     vector<string> leftover_args;
     opt_parse.parse(argc, argv, leftover_args);
     if (argc == 1 || opt_parse.help_requested()) {
@@ -113,6 +116,9 @@ main(int argc, const char **argv) {
     if (!outfile.empty()) of.open(outfile.c_str());
     std::ostream out(outfile.empty() ? cout.rdbuf() : of.rdbuf());
 
+    std::ofstream out_leftover;
+    if (!leftover_file.empty()) out_leftover.open(leftover_file.c_str()); 
+
     std::ifstream in(epi_file.c_str());
     if (!in)
       throw SMITHLABException("cannot open input file: " + epi_file);
@@ -124,7 +130,10 @@ main(int argc, const char **argv) {
       if (index == idx.back()) {
         out << line << endl;
         idx.pop_back();
+      } else if (!leftover_file.empty()) {
+        out_leftover << line << endl; 
       }
+
       ++index;
     }
  
